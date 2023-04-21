@@ -33,7 +33,11 @@
           return newState
         }
         // 전역 변수에 저장
-        var store = Redux.createStore(reducer)
+        var store = Redux.createStore(
+          reducer,
+          // FOR REDUX DEV EXTENSION
+          window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()   
+          )
 
         function red(){
           var state = store.getState()
