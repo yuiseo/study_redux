@@ -45,6 +45,8 @@
             </div>
         `;
         }
+        //state값이 바뀔때마다 red가 호출
+        store.subscribe(red)
         red();
     </script>
   </body>
