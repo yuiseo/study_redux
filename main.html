@@ -4,6 +4,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.js"></script>
 </head>
 <body>
+
   <div id="subject"></div>
   <div id="toc"></div>
   <div id="control"></div>
@@ -53,17 +54,29 @@
 
 
     function article(){
+      var state = store.getState()
+      var i = 0
+      var aTtitle,aDesc
+      while (i<state.contents.length){
+        if(state.contents[i].id===state.selected_id){
+          aTtitle=state.contents[i].title
+          aDesc=state.contents[i].desc
+          break
+        }
+        i = i+1
+      }
+
       document.querySelector('#content').innerHTML=`  
       <article>
-        <h2>HTML</h2>
-        HTML IS ...
+        <h2>${aTtitle}</h2>
+        ${aDesc}
       </article>
       `
     }
     function reducer(state,action){
       if(state === undefined){
         return {
-          selected_id:null,
+          selected_id:2,
           contents:[
             {id:1,title:'HTML',desc:'HTML is...'},
             {id:2,title:'CSS',desc:'CSS is...'},
@@ -79,12 +92,19 @@
       return newState
     }
     var store = Redux.createStore(reducer)
+    /*
+    *action을 통해 action을 dispatch에 전달하고 
+    *reducer가 state값을 갱신하고 
+    *dispatch가 subscribe하고있는 함수들을 호출해
+    *state값을 참조하여 UI를 바꿔줌
+    */
+    store.subscribe(article)
 
-  subject();
-  TOC();
-  control();
-  article();
-    
+    subject();
+    TOC();
+    control();
+    article();
+      
   </script>
 </body>
 </html>
