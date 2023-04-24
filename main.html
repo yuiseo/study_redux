@@ -46,7 +46,10 @@
     function control(){
       document.querySelector('#control').innerHTML=`
       <ul>
-        <li><a href="/create">create</a></li>
+        <li><a onclick="
+          event.preventDefault()
+
+          " href="/create">create</a></li>
         <li><input type="button" value="delete"></li>
       </ul>
       `
@@ -55,27 +58,58 @@
 
     function article(){
       var state = store.getState()
-      var i = 0
-      var aTtitle,aDesc
-      while (i<state.contents.length){
-        if(state.contents[i].id===state.selected_id){
-          aTtitle=state.contents[i].title
-          aDesc=state.contents[i].desc
-          break
+      if(state.mode === 'create'){
+        document.querySelector('#content').innerHTML=`
+          <article>
+            <form onsubmit="
+              event.preventDefault()
+              var _title = this.title.value
+              var _desc = this.desc.value
+              store.dispatch({
+                type:'CREATE',
+                title:_title,
+                desc:_desc
+              })
+            ">
+              <p>
+                <input type="text" name="title" placeholder="title">
+              </p>
+              <p>
+                <textarea name="desc" 
+                placeholder="description"></textarea>
+              </p>
+              <p>
+                <input type="submit">
+              </p>
+            </form>
+          </article>
+        `
+      }else if(state.mode === 'read'){
+        var i = 0
+        var aTtitle,aDesc
+        while (i<state.contents.length){
+          if(state.contents[i].id===state.selected_id){
+            aTtitle=state.contents[i].title
+            aDesc=state.contents[i].desc
+            break
+          }
+          i = i+1
         }
-        i = i+1
+        document.querySelector('#content').innerHTML=`  
+        <article>
+          <h2>${aTtitle}</h2>
+          ${aDesc}
+        </article>
+        `
       }
 
-      document.querySelector('#content').innerHTML=`  
-      <article>
-        <h2>${aTtitle}</h2>
-        ${aDesc}
-      </article>
-      `
+   
     }
     function reducer(state,action){
       if(state === undefined){
         return {
+          max_id:2,
+          mode:'create',
           selected_id:2,
           contents:[
             {id:1,title:'HTML',desc:'HTML is...'},
@@ -87,6 +121,18 @@
       if(action.type === 'SELECT'){
         //newState는 기존의 state(이전의)에 select된 id값이 덮어짐
         newState = Object.assign({},state,{selected_id:action.id})
+      }else if(action.type ==='CREATE'){
+        var newMaxId = state.max_id+1
+        // concat:  기존의 배열을 복사해 새로운 배열을 return
+        var newContents = state.contents.concat()
+        newContents.push({id:newMaxId,title:action.title,desc:action.desc})
+        //기존의 값을 새로운 배열에 복사
+        //https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+        newState = Object.assign({},state,{
+          max_id:newMaxId,
+          contents:newContents,
+          mode:'read'
+        })
       }
       console.log({state,action,newState})
       return newState
@@ -99,7 +145,7 @@
     *state값을 참조하여 UI를 바꿔줌
     */
     store.subscribe(article)
-
+    store.subscribe(TOC)
     subject();
     TOC();
     control();
