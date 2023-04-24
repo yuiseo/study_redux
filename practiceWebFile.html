@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>웹 어플리케이션에서 파일 사용하기</h1>
+  <input type="file" id="fileElem" multiple accept="image/*" style="display:none" onChange="handleFiles(this.files)">
+  <a href="#" id="fileSelect">select some files</a>
+  <div id="fileList">
+    <p>no files selected!</p>
+  </div>
+  <script>
+    window.URL = window.URL || window.webkitURL
+
+    const fileSelect = document.getElementById("fileSelect")
+    fileElem = document.getElementById('fileElem')
+    fileList = document.getElementById('fileList')
+    
+    fileSelect.addEventListener('click',function(e){
+      if(fileElem){
+        fileElem.click()
+      }
+      e.preventDefault()
+    },false)
+
+    function handleFiles(files){
+      console.log(files)
+      if(!files.length){
+        fileList.innerHTML = "<p>no files selected!</p>"
+      }else{
+        fileList.innerHTML=""
+        const list = document.createElement("ul")
+        fileList.appendChild(list)
+
+        for(let i=0;i<files.length;i++){
+          const li = document.createElement("li")
+          list.appendChild(li)
+
+          const img = document.createElement('img')
+          img.src = window.URL.createObjectURL(files[i])
+          img.height=100
+          img.onload=function(){
+            window.URL.revokeObjectURL(this.src)
+          }
+          li.appendChild(img)
+          const info = document.createElement("span")
+          info.innerHTML = files[i].name + " : " + files[i].size + "bytes"
+          li.appendChild(info)
+        }
+
+      }
+    }
+  </script>
+  <h1>여러 파일 받기</h1>
+  <!-- input에 multiple 적용시 여러개의 파일 등록 가능 -->
+  <input type="file" multiple id="myfiles">
+  <div class="output"></div>
+  <script>
+    const output = document.querySelector('.output')
+    const myFiles = document.querySelector('#myfiles')
+
+    function logFilenames(){
+      const fileInput = document.querySelector('#myfiles')
+      const files = fileInput.files
+      const fileListLength = files.length
+      for(let i =0; i<fileListLength;i++){
+        output.innerText = `${output.innerText}\n${files.item(i).name}`
+      }
+    }
+    myFiles.addEventListener("change",logFilenames)
+  </script>
+
+  <h1>파일 확장자</h1>
+  <input type="file" accept="image/*" onChange="checkFile(this.files)">
+  <script>
+    function checkFile(f){
+      const fileName = f[0].name
+      var ext = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length).toLowerCase()
+      
+      if(ext != 'jpg' && ext != 'png' ){
+        alert("확장자가 jpg, png인\n파일만 업로드 할 수 있습니다.");
+        return false;
+    }
+    }
+  </script>
+</body>
+</html>
