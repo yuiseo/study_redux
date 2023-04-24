@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.js"></script>
 </head>
 <body>
   <div id="subject"></div>
@@ -20,19 +17,24 @@
       </header>
      `
     }
-    subject()
 
     function TOC(){
+    var state = store.getState();
+    var i = 0;
+    var liTags = '';
+    while(i<state.contents.length){
+        liTags = liTags + `
+            <li>
+                <a href="${state.contents[i].id}">${state.contents[i].title}</a>
+            </li>`;
+        i = i + 1;
+    }
       document.querySelector('#toc').innerHTML=`
       <nav>
-        <ol>
-          <li><a href="1.html">HTML</a></li>
-          <li><a href="2.html">CSS</a></li>
-        </ol>
+        <ol>${liTags}</ol>
       </nav>
       `
     }
-    TOC()
 
     function control(){
       document.querySelector('#control').innerHTML=`
@@ -42,7 +44,7 @@
       </ul>
       `
     }
-    control()
+
 
     function article(){
       document.querySelector('#content').innerHTML=`  
@@ -52,7 +54,22 @@
       </article>
       `
     }
-    article()
+    function reducer(state,action){
+      if(state === undefined){
+        return {
+          contents:[
+            {id:1,title:'HTML',desc:'HTML is...'},
+            {id:2,title:'CSS',desc:'CSS is...'},
+          ]
+        }
+      }
+    }
+    var store = Redux.createStore(reducer)
+
+  subject();
+  TOC();
+  control();
+  article();
     
   </script>
 </body>
